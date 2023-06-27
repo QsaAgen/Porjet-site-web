@@ -2,11 +2,16 @@
 
 ## Description
 
-Ce projet a pour but de créer une application web pour simplifier ainsi que regrouper la façon de reception des analyses
+Ce projet a pour but de créer une application web pour simplifier ainsi que regrouper la façon de receptionner des analyses
 
 ### L'équipe 
 
 - Killian PORTIER
+
+## Information importantes
+
+Si vous n'arrivez pas à push, ajoutez-vous en collaborateur.\
+Si cela ne fonctionne pas après ça, essayez d'ajouter votre clé ssh au compte github.
 
 ## Les technologies utilisées
 
