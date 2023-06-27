@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail du bon de commande N°{{ order.id }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="detail-order-container w-75 mx-auto background-gray qsa-radius">
+        <h1 class="text-center mb-3 pt-2">Bon de commande numéro {{ order.id }}</h1>
+        <p class="text-end me-3"><a href="{{ path('app_home') }}">Retour à l'accueil</a></p>
+        <p class="ms-2 text-danger text-center"><strong>Si il manque des informations sur vos échantillons, ils ne pourront pas être récupérés par QSA</strong></p>
+
+        <table class="table qsa-border qsa-table">
+            <thead>
+            <tr>
+                <th scope="col">Numéro de lot</th>
+                <th scope="col">Nom du produit</th>
+                <th scope="col">Nom du fournisseur</th>
+                <th scope="col">Température du produit</th>
+                <th scope="col">Température de l'enceinte</th>
+                <th scope="col" class="text-center">#</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set infoManquantes = 0 %}
+            {% for echantillon in echantillons %}
+                {% set infoImportanteManquante = 0 %}
+                {% if echantillon.dateOfSampling == null %}
+                    {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                    {% set infoManquantes = infoManquantes + 1 %}
+                {% endif %}
+                {% if echantillon.productName == null %}
+                    {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                    {% set infoManquantes = infoManquantes + 1 %}
+                {% endif %}
+                {% if echantillon.etatPhysique == null %}
+                    {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                    {% set infoManquantes = infoManquantes + 1 %}
+                {% endif %}
+                {% if echantillon.conditioning == null %}
+                    {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                    {% set infoManquantes = infoManquantes + 1 %}
+                {% endif %}
+                {% if echantillon.dateAnalyse == null %}
+                    {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                    {% set infoManquantes = infoManquantes + 1 %}
+                {% endif %}
+                {% if echantillon.validationDlc == true %}
+                    {% if echantillon.tempOfBreak == null %}
+                        {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                        {% set infoManquantes = infoManquantes + 1 %}
+                    {% endif %}
+                    {% if echantillon.dateOfBreak == null %}
+                        {% set infoImportanteManquante = infoImportanteManquante + 1 %}
+                        {% set infoManquantes = infoManquantes + 1 %}
+                    {% endif %}
+                {% endif %}
+                <tr>
+                    <td>{{ echantillon.numberOfBatch }}</td>
+                    <td>{{ echantillon.productName }}</td>
+                    <td>{{ echantillon.supplier }}</td>
+                    <td>{{ echantillon.temperatureOfProduct }}</td>
+                    <td>{{ echantillon.temperatureOfEnceinte }}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ path('app_detail_echantillon', {'id': echantillon.id}) }}">Détails
+                                échantillon</a>
+                            {% if infoImportanteManquante != 0 %}
+
+                                <p class="text-danger mb-1 qsa-info-imp"><i
+                                            class="fa-solid fa-triangle-exclamation mb-1 text-danger"></i> {{ infoImportanteManquante }}
+                                    <span class="text-danger tooltiptext">Il manque {{ infoImportanteManquante }} informations importantes</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if order.isExported == 0 %}
+            {% if app.user.id == order.entreprise.id %}
+                <p class="ms-2 p-2"><a href="{{ path('app_add_missing_echantillon_to_order', {'id': order.id}) }}">Ajouter
+                        un échantillon
+                        manquant</a></p>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+                {% if infoManquantes == 0 %}
+                    <a class="btn qsa-btn ms-2 mb-3" href="{{ path('app_export_in_csv', {'id': order.id}) }}">Exporter
+                        les
+                        échantillons
+                        en
+                        XLSX</a>
+                {% else %}
+                    <h5 class="p-2 text-danger text-center">Il manque des informations sur les échantillons vous ne
+                        pouvez pas encore les récupérer</h5>
+                {% endif %}
+            {% endif %}
+        {% else %}
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') %}
+            {% if order.isExported == 1 %}
+                <a class="btn qsa-btn ms-2 mb-3" href="{{ path('app_export_in_csv', { id : order.id}) }}">Exporter à
+                    nouveau le bon de
+                    commande</a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock %}

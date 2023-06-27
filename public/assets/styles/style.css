@@ -1,0 +1,78 @@
+@import "header.css";
+@import "login.css";
+@import "register.css";
+@import "home.css";
+@import "account.css";
+@import "echantillon.css";
+@import "pagination.css";
+@import "letters.css";
+@import "detailOrder.css";
+
+li {
+    list-style: none;
+    text-decoration: none;
+}
+
+.background-gray {
+    background-color: #dee2e6;
+}
+
+.qsa-btn {
+    background-color: #FFDD00 !important;
+    border: 2px solid black !important;
+    color: black !important;
+}
+
+.qsa-btn:hover {
+    background-color: #a28b00 !important;
+    border: 2px solid #a28b00 !important;
+    color: white !important;
+}
+
+.qsa-btn:hover a {
+    color: white !important;
+}
+
+.qsa-radius {
+    border-radius: 15px;
+}
+
+.errors ul {
+    padding: 0;
+}
+
+.errors ul li {
+    list-style: none;
+    background-color: #f8d7da;
+    border: 1px solid #f1aeb5;
+    border-radius: 8px;
+    color: #b02a37;
+    line-height: 32px;
+    /*text-align: center;*/
+    padding: 1rem;
+}
+
+.qsa-border {
+    border: 5px solid #FFDD00;
+}
+
+.footer-space-div {
+    height: 50px;
+    width: 100%;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mb-10 {
+    margin-bottom: 5rem;
+}
+
+.qsa-none {
+    display: none;
+}
+
+.validation-dlc-check-box:s > .qsa-none {
+    display: initial;
+}

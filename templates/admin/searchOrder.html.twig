@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Entre le {{ date1|date('d-m-Y') }} et le {{ date2|date('d-m-Y') }} - {{ parent() }}{% endblock %}
+
+{% block header %}
+    <header class="fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white d-md-none">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ asset('assets/images/LOGO-QSA-CONSEIL.png') }}" class="logo-qsa" alt="Logo QSA">
+                </div>
+                {% if app.user %}
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="{{ path('app_home') }}">Bons non
+                                        exportés</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="{{ path('app_entreprise') }}" >Liste des
+                                        entreprises</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_add_pdf') }}" >Ajouter rapport d'audit</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="{{ path('app_home') }}" >Toutes vos
+                                        analyses</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_choose_how_to_add_echantillon') }}" >Envoyer de nouveaux
+                                        échantillons</a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_account') }}">Mon compte</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+
+            </div>
+        </nav>
+        <div class="d-none d-md-flex justify-content-center pb-3 background-gray ">
+            <img src="{{ asset('assets/images/LOGO-QSA-CONSEIL.png') }}" class="logo-qsa" alt="Logo QSA" id="qsa-logo">
+        </div>
+        <div class="d-none d-md-block qsa-nav-bar background-gray ">
+            {% if app.user %}
+                <ul class="d-flex justify-content-center mb-0">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_home') }}" class="qsa-link-header">
+                            <li class="p-2 qsa-link">Bons non exportés</li>
+                        </a>
+                        <a href="{{ path('app_entreprise') }}" class="qsa-link-header qsa-link-header-1">
+                            <li class="p-2 qsa-link">Liste des entreprises</li>
+                        </a>
+                        <a href="{{ path('app_add_pdf') }}" class=" qsa-link-header qsa-link-header-1">
+                            <li class="p-2 qsa-link">Ajouter PDF audit</li>
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_home') }}" class="qsa-link-header">
+                            <li class="p-2 qsa-link">Toutes vos analyses</li>
+                        </a>
+                        <a href="{{ path('app_order') }}" class="qsa-link-header qsa-link-header-1">
+                            <li class="p-2 qsa-link">Envoyer de nouvelles analyse</li>
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('app_account') }}" class="qsa-link-header qsa-link-header-1">
+                        <li class="p-2 qsa-link">Mon compte</li>
+                    </a>
+                    <a href="{{ path('app_logout') }}" class="qsa-link-header">
+                        <li class="p-2 qsa-link">Se déconnecter</li>
+                    </a>
+                </ul>
+            {% endif %}
+            {% include '_includes/letters.html.twig' %}
+        </div>
+    </header>
+    <div class="qsa-fake-header col-12"></div>
+{% endblock %}
+
+{% block body %}
+
+    <div class="w-75 mx-auto mt-5">
+        {% include '_includes/searchBar.html.twig' %}
+    </div>
+
+    {% if orders is defined %}
+        {% if orders is not empty %}
+            <div class="w-75 mx-auto">
+                <h2 class="text-center">Bons de commandes créés entre le {{ date1 | date('d-m-Y') }} et le {% if date2 is defined %}
+                        {{ date2 | date('d-m-Y') }}
+                    {% endif %}</h2>
+                <hr class="sep">
+                <div class="list-entreprise">
+                    {% for order in orders %}
+                        <div class="qsa-border qsa-radius background-gray mb-3">
+                            <h5 class="p-3">Bon de commande numéro {{ order.id }}</h5>
+
+                            <div class="order-of-entreprise">
+                                <table class="table mb-0 qsa-border">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Nombre d'échantillons</th>
+                                        <th scope="col">A été exporté</th>
+                                        <th scope="col">Crée le :</th>
+                                        <th scope="col">Par</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% set countEchantillon = 0 %}
+
+                                    {% for echantillon in order.echantillons %}
+                                        {% set countEchantillon = countEchantillon + 1 %}
+                                    {% endfor %}
+
+                                    {% if countEchantillon != 0 %}
+                                        <tr>
+                                            <td>{{ countEchantillon }}</td>
+                                            {% if order.isExported == 0 %}
+                                                <td>Non</td>
+                                            {% else %}
+                                                <td>Oui</td>
+                                            {% endif %}
+                                            <td>{{ order.createdAt | date("d-m-Y") }}</td>
+                                            <td>{{ order.entreprise.name }}</td>
+                                            <td>
+                                                <a href="{{ path('app_detail_order', { id : order.id}) }}">Voir
+                                                    plus</a></td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div>
+                <h2>Bons de commandes crées {% if date2 is defined %}
+                        entre
+                    {% endif %} <br>le {{ date1 | date('d-m-Y') }} et le {% if date2 is defined %}
+                        {{ date2 | date('d-m-Y') }}
+                    {% endif %}</h2>
+                <hr class="w-50 sep">
+                <div>
+                    <h4 class="text-center mt-2">Il n'y a pas de bons de commandes créés entre ces dates</h4>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
